@@ -17,15 +17,18 @@ import { AccessTime, CheckCircle } from '@mui/icons-material';
 
 interface OrderItem {
     id: string;
-    name: string;
+    // name: string; // Incorrect: name is in menuItem
     quantity: number;
+    menuItem: {
+        name: string;
+    };
 }
 
 interface Order {
-    id: string;
+    id: number;
     table_number: number;
     status: 'PENDING' | 'PREPARING' | 'READY' | 'COMPLETED';
-    created_at: string;
+    createdAt: string; // Corrected from created_at
     items: OrderItem[];
 }
 
@@ -44,8 +47,6 @@ const KitchenDisplayPage: React.FC = () => {
         const fetchOrders = async () => {
             try {
                 const res = await api.get('/orders');
-                // The backend returns full orders, we might need to map them to the UI format
-                // For now, let's just use the mock if API fails
                 setOrders(res.data);
             } catch (err) {
                 console.error('Failed to fetch orders:', err);
@@ -73,7 +74,7 @@ const KitchenDisplayPage: React.FC = () => {
         };
     }, []);
 
-    const updateStatus = async (orderId: string, status: string) => {
+    const updateStatus = async (orderId: number, status: string) => {
         try {
             await api.patch(`/orders/${orderId}`, { status });
             setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: status as any } : o));
@@ -101,12 +102,12 @@ const KitchenDisplayPage: React.FC = () => {
                                     <CardContent>
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                                             <Typography variant="h6">Table #{order.table_number}</Typography>
-                                            <Chip label={new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} icon={<AccessTime />} size="small" />
+                                            <Chip label={new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} icon={<AccessTime />} size="small" />
                                         </Box>
                                         <List dense>
                                             {order.items.map((item, idx) => (
                                                 <ListItem key={idx} disablePadding>
-                                                    <ListItemText primary={`${item.quantity}x ${item.name}`} />
+                                                    <ListItemText primary={`${item.quantity}x ${item.menuItem?.name || 'Unknown Item'}`} />
                                                 </ListItem>
                                             ))}
                                         </List>

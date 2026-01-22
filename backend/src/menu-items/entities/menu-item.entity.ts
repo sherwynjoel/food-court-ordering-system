@@ -24,5 +24,8 @@ export class MenuItem {
 
     @Column()
     branch_id: string;
+
+    @Column({ default: 'General' })
+    category: string;
 }
 

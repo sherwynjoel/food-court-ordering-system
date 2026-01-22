@@ -56,10 +56,28 @@ const BranchesPage: React.FC = () => {
             await api.post('/branches', formData);
             setOpen(false);
             setFormData({ name: '', location: '' });
+            // Refresh the list after successful creation
             fetchBranches();
         } catch (error) {
             console.error('Failed to create branch', error);
         }
+    };
+
+    // New: Delete a branch and refresh list
+    const handleDelete = async (id: string) => {
+        try {
+            await api.delete(`/branches/${id}`);
+            // Refresh after deletion
+            fetchBranches();
+        } catch (error) {
+            console.error('Failed to delete branch', error);
+        }
+    };
+
+    // Placeholder for edit functionality (future implementation)
+    const handleEdit = (branch: Branch) => {
+        // Open edit dialog, pre‑fill form, then call API PUT/PATCH
+        console.log('Edit requested for', branch);
     };
 
     return (
@@ -94,8 +112,8 @@ const BranchesPage: React.FC = () => {
                                     />
                                 </TableCell>
                                 <TableCell align="right">
-                                    <IconButton size="small"><Edit /></IconButton>
-                                    <IconButton size="small" color="error"><Delete /></IconButton>
+                                    <IconButton size="small" onClick={() => handleEdit(branch)}><Edit /></IconButton>
+                                    <IconButton size="small" color="error" onClick={() => handleDelete(branch.id)}><Delete /></IconButton>
                                 </TableCell>
                             </TableRow>
                         ))}

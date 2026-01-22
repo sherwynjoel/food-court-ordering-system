@@ -3,8 +3,8 @@ import { OrderItem } from './order-item.entity';
 
 @Entity()
 export class Order {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+    @PrimaryGeneratedColumn('increment')
+    id: number;
 
     @Column()
     table_number: string;

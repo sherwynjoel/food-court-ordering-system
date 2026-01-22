@@ -28,6 +28,7 @@ interface MenuItemType {
     price: number;
     kitchen_id: string;
     branch_id: string;
+    category?: string;
     image_url?: string;
     kitchen?: { name: string };
 }
@@ -47,7 +48,7 @@ const MenuManagementPage: React.FC = () => {
     const [kitchens, setKitchens] = useState<Kitchen[]>([]);
     const [branches, setBranches] = useState<Branch[]>([]);
     const [open, setOpen] = useState(false);
-    const [formData, setFormData] = useState({ name: '', price: '', kitchen_id: '', branch_id: '', image_url: '' });
+    const [formData, setFormData] = useState({ name: '', price: '', category: '', kitchen_id: '', branch_id: '', image_url: '' });
 
     const fetchData = async () => {
         try {
@@ -84,7 +85,7 @@ const MenuManagementPage: React.FC = () => {
         try {
             await api.post('/menu-items', { ...formData, price: parseFloat(formData.price) });
             setOpen(false);
-            setFormData({ name: '', price: '', kitchen_id: '', branch_id: '', image_url: '' });
+            setFormData({ name: '', price: '', category: '', kitchen_id: '', branch_id: '', image_url: '' });
             fetchData();
         } catch (error) {
             console.error('Failed to create menu item', error);
@@ -106,6 +107,7 @@ const MenuManagementPage: React.FC = () => {
                         <TableRow>
                             <TableCell>Image</TableCell>
                             <TableCell>Name</TableCell>
+                            <TableCell>Category</TableCell>
                             <TableCell>Price</TableCell>
                             <TableCell>Kitchen</TableCell>
                             <TableCell align="right">Actions</TableCell>
@@ -118,6 +120,7 @@ const MenuManagementPage: React.FC = () => {
                                     {item.image_url && <CardMedia component="img" sx={{ width: 50, height: 50, borderRadius: 1 }} image={item.image_url} alt={item.name} />}
                                 </TableCell>
                                 <TableCell>{item.name}</TableCell>
+                                <TableCell>{item.category || 'General'}</TableCell>
                                 <TableCell>${item.price}</TableCell>
                                 <TableCell>{item.kitchen?.name || 'Unknown'}</TableCell>
                                 <TableCell align="right">
@@ -148,6 +151,13 @@ const MenuManagementPage: React.FC = () => {
                         fullWidth
                         value={formData.price}
                         onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    />
+                    <TextField
+                        margin="dense"
+                        label="Category"
+                        fullWidth
+                        value={formData.category}
+                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     />
                     <TextField
                         margin="dense"

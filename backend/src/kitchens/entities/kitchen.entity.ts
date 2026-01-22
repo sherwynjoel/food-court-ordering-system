@@ -16,8 +16,8 @@ export class Kitchen {
     @JoinColumn({ name: 'branch_id' })
     branch: Branch;
 
-    @Column()
-    branch_id: string;
+    // @Column()
+    // branch_id: string;
 
     @CreateDateColumn()
     createdAt: Date;

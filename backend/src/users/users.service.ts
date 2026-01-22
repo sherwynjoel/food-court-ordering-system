@@ -33,6 +33,13 @@ export class UsersService {
     return user;
   }
 
+  async findByEmail(email: string) {
+    return this.usersRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'password_hash', 'role', 'branch_id'],
+    });
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(id);
     this.usersRepository.merge(user, updateUserDto);

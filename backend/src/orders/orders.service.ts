@@ -74,7 +74,7 @@ export class OrdersService {
     return this.ordersRepository.find({ relations: ['items', 'items.menuItem'] });
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const order = await this.ordersRepository.findOne({
       where: { id },
       relations: ['items', 'items.menuItem'],
@@ -85,11 +85,11 @@ export class OrdersService {
     return order;
   }
 
-  update(id: string, updateOrderDto: UpdateOrderDto) {
+  update(id: number, updateOrderDto: UpdateOrderDto) {
     return `This action updates a #${id} order`;
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return `This action removes a #${id} order`;
   }
 }

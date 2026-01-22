@@ -13,10 +13,7 @@ export class AuthService {
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
-    // Note: In a real app, use findOne by email and compare hashed password.
-    // Assuming UsersService has a method findOneByEmail implemented or using manual search for now.
-    const users = await this.usersService.findAll(); // Inefficient, but quick for MVP without modifying UsersService
-    const user = users.find(u => u.email === email);
+    const user = await this.usersService.findByEmail(email);
 
     // Simple check (replace with bcrypt.compare in prod)
     if (user && user.password_hash === pass) {

@@ -26,7 +26,11 @@ interface Kitchen {
     id: string;
     name: string;
     status: string;
-    branch_id: string;
+    branch?: {
+        id: string;
+        name: string;
+    };
+    branch_id?: string;
 }
 
 interface Branch {
@@ -71,10 +75,28 @@ const KitchensPage: React.FC = () => {
             await api.post('/kitchens', formData);
             setOpen(false);
             setFormData({ name: '', branch_id: '' });
+            // Refresh the list after successful creation
             fetchData();
         } catch (error) {
             console.error('Failed to create kitchen', error);
         }
+    };
+
+    // Delete a kitchen and refresh list
+    const handleDelete = async (id: string) => {
+        try {
+            await api.delete(`/kitchens/${id}`);
+            // Refresh after deletion
+            fetchData();
+        } catch (error) {
+            console.error('Failed to delete kitchen', error);
+        }
+    };
+
+    // Placeholder for edit functionality (future implementation)
+    const handleEdit = (kitchen: Kitchen) => {
+        // Open edit dialog, pre-fill form, then call API PUT/PATCH
+        console.log('Edit requested for', kitchen);
     };
 
     const getBranchName = (id: string) => {
@@ -105,7 +127,7 @@ const KitchensPage: React.FC = () => {
                         {kitchens.map((kitchen) => (
                             <TableRow key={kitchen.id}>
                                 <TableCell>{kitchen.name}</TableCell>
-                                <TableCell>{getBranchName(kitchen.branch_id)}</TableCell>
+                                <TableCell>{kitchen.branch?.name || 'Unknown Branch'}</TableCell>
                                 <TableCell>
                                     <Chip
                                         label={kitchen.status}
@@ -114,8 +136,8 @@ const KitchensPage: React.FC = () => {
                                     />
                                 </TableCell>
                                 <TableCell align="right">
-                                    <IconButton size="small"><Edit /></IconButton>
-                                    <IconButton size="small" color="error"><Delete /></IconButton>
+                                    <IconButton size="small" onClick={() => handleEdit(kitchen)}><Edit /></IconButton>
+                                    <IconButton size="small" color="error" onClick={() => handleDelete(kitchen.id)}><Delete /></IconButton>
                                 </TableCell>
                             </TableRow>
                         ))}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
     Box,
     CssBaseline,
@@ -15,7 +15,9 @@ import {
     IconButton,
     Avatar,
     Menu,
-    MenuItem
+    MenuItem,
+    useTheme,
+    alpha
 } from '@mui/material';
 import {
     Menu as MenuIcon,
@@ -23,17 +25,20 @@ import {
     Restaurant,
     People,
     Store,
-    Logout
+    Logout,
+    Fastfood
 } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 
-const drawerWidth = 240;
+const drawerWidth = 260;
 
 const DashboardLayout: React.FC = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+    const theme = useTheme();
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -52,31 +57,73 @@ const DashboardLayout: React.FC = () => {
         navigate('/login');
     };
 
+    const navItems = [
+        { text: 'Dashboard', icon: <Dashboard />, path: '/' },
+        { text: 'Branches', icon: <Store />, path: '/branches' },
+        { text: 'Kitchens', icon: <Restaurant />, path: '/kitchens' },
+        { text: 'Users', icon: <People />, path: '/users' },
+        { text: 'Menu', icon: <Fastfood />, path: '/menu' },
+        { text: 'KDS', icon: <Restaurant />, path: '/kds' },
+    ];
+
     const drawer = (
-        <div>
-            <Toolbar>
-                <Typography variant="h6" noWrap component="div" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-                    Food Court Admin
-                </Typography>
+        <Box sx={{ height: '100%', bgcolor: 'background.default' }}>
+            <Toolbar sx={{ px: 3, mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Box sx={{
+                        p: 1,
+                        borderRadius: 2,
+                        bgcolor: 'primary.main',
+                        display: 'flex',
+                        boxShadow: '0 4px 6px -1px rgb(99 102 241 / 0.4)'
+                    }}>
+                        <Fastfood sx={{ color: 'white' }} />
+                    </Box>
+                    <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 800, letterSpacing: '-0.5px' }}>
+                        FC Admin
+                    </Typography>
+                </Box>
             </Toolbar>
-            <List>
-                {['Dashboard', 'Branches', 'Kitchens', 'Users', 'Menu', 'KDS'].map((text, index) => (
-                    <ListItem key={text} disablePadding>
-                        <ListItemButton onClick={() => navigate(text === 'Dashboard' ? '/' : `/${text.toLowerCase()}`)}>
-                            <ListItemIcon>
-                                {index === 0 && <Dashboard />}
-                                {index === 1 && <Store />}
-                                {index === 2 && <Restaurant />}
-                                {index === 3 && <People />}
-                                {index === 4 && <MenuIcon />}
-                                {index === 5 && <Restaurant />}
-                            </ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItemButton>
-                    </ListItem>
-                ))}
+            <List sx={{ px: 2 }}>
+                {navItems.map((item) => {
+                    const active = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+                    return (
+                        <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
+                            <ListItemButton
+                                onClick={() => navigate(item.path)}
+                                sx={{
+                                    borderRadius: 3,
+                                    py: 1.2,
+                                    px: 2,
+                                    bgcolor: active ? alpha(theme.palette.primary.main, 0.08) : 'transparent',
+                                    color: active ? 'primary.main' : 'text.secondary',
+                                    '&:hover': {
+                                        bgcolor: alpha(theme.palette.primary.main, 0.04),
+                                        color: 'primary.main',
+                                        '& .MuiListItemIcon-root': { color: 'primary.main' }
+                                    },
+                                }}
+                            >
+                                <ListItemIcon sx={{
+                                    minWidth: 40,
+                                    color: active ? 'primary.main' : 'text.secondary',
+                                    transition: 'color 0.2s'
+                                }}>
+                                    {item.icon}
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={item.text}
+                                    primaryTypographyProps={{
+                                        fontWeight: active ? 700 : 500,
+                                        fontSize: '0.95rem'
+                                    }}
+                                />
+                            </ListItemButton>
+                        </ListItem>
+                    );
+                })}
             </List>
-        </div>
+        </Box>
     );
 
     return (
@@ -87,9 +134,6 @@ const DashboardLayout: React.FC = () => {
                 sx={{
                     width: { sm: `calc(100% - ${drawerWidth}px)` },
                     ml: { sm: `${drawerWidth}px` },
-                    bgcolor: 'white',
-                    color: 'text.primary',
-                    boxShadow: 1
                 }}
             >
                 <Toolbar>
@@ -103,12 +147,23 @@ const DashboardLayout: React.FC = () => {
                         <MenuIcon />
                     </IconButton>
                     <Box sx={{ flexGrow: 1 }} />
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Typography variant="body1" sx={{ mr: 2 }}>
-                            {user?.email}
-                        </Typography>
-                        <IconButton onClick={handleMenuOpen} size="small">
-                            <Avatar sx={{ bgcolor: 'secondary.main' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box sx={{ textAlign: 'right', display: { xs: 'none', sm: 'block' } }}>
+                            <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                                {user?.email?.split('@')[0]}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                                Super Admin
+                            </Typography>
+                        </Box>
+                        <IconButton onClick={handleMenuOpen} sx={{ p: 0.5, border: '1px solid', borderColor: 'divider' }}>
+                            <Avatar sx={{
+                                bgcolor: 'primary.main',
+                                width: 36,
+                                height: 36,
+                                fontSize: '0.9rem',
+                                fontWeight: 600
+                            }}>
                                 {user?.email?.charAt(0).toUpperCase()}
                             </Avatar>
                         </IconButton>
@@ -116,12 +171,13 @@ const DashboardLayout: React.FC = () => {
                             anchorEl={anchorEl}
                             open={Boolean(anchorEl)}
                             onClose={handleMenuClose}
+                            PaperProps={{
+                                sx: { mt: 1.5, minWidth: 160, borderRadius: 3, boxShadow: theme.shadows[3] }
+                            }}
                         >
-                            <MenuItem onClick={handleLogout}>
-                                <ListItemIcon>
-                                    <Logout fontSize="small" />
-                                </ListItemIcon>
-                                Logout
+                            <MenuItem onClick={handleLogout} sx={{ py: 1.5, gap: 1.5 }}>
+                                <Logout fontSize="small" sx={{ color: 'text.secondary' }} />
+                                <Typography variant="body2" fontWeight={500}>Logout</Typography>
                             </MenuItem>
                         </Menu>
                     </Box>
@@ -138,7 +194,7 @@ const DashboardLayout: React.FC = () => {
                     ModalProps={{ keepMounted: true }}
                     sx={{
                         display: { xs: 'block', sm: 'none' },
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, border: 'none' },
                     }}
                 >
                     {drawer}
@@ -147,7 +203,13 @@ const DashboardLayout: React.FC = () => {
                     variant="permanent"
                     sx={{
                         display: { xs: 'none', sm: 'block' },
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                        '& .MuiDrawer-paper': {
+                            boxSizing: 'border-box',
+                            width: drawerWidth,
+                            border: 'none',
+                            borderRight: '1px solid',
+                            borderColor: 'divider'
+                        },
                     }}
                     open
                 >
@@ -156,7 +218,7 @@ const DashboardLayout: React.FC = () => {
             </Box>
             <Box
                 component="main"
-                sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` }, mt: 8 }}
+                sx={{ flexGrow: 1, p: { xs: 2, sm: 4, md: 6 }, width: { sm: `calc(100% - ${drawerWidth}px)` }, mt: 8 }}
             >
                 <Outlet />
             </Box>

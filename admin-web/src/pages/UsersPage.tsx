@@ -71,10 +71,28 @@ const UsersPage: React.FC = () => {
             await api.post('/auth/register', formData); // Register via Auth API
             setOpen(false);
             setFormData({ email: '', password: '', role: 'BRANCH_ADMIN', branch_id: '' });
+            // Refresh the list after successful creation
             fetchData();
         } catch (error) {
             console.error('Failed to create user', error);
         }
+    };
+
+    // Delete a user and refresh list
+    const handleDelete = async (id: string) => {
+        try {
+            await api.delete(`/users/${id}`);
+            // Refresh after deletion
+            fetchData();
+        } catch (error) {
+            console.error('Failed to delete user', error);
+        }
+    };
+
+    // Placeholder for edit functionality (future implementation)
+    const handleEdit = (user: User) => {
+        // Open edit dialog, pre-fill form, then call API PUT/PATCH
+        console.log('Edit requested for', user);
     };
 
     const getBranchName = (id?: string) => {
@@ -115,8 +133,8 @@ const UsersPage: React.FC = () => {
                                 </TableCell>
                                 <TableCell>{getBranchName(user.branch_id)}</TableCell>
                                 <TableCell align="right">
-                                    <IconButton size="small"><Edit /></IconButton>
-                                    <IconButton size="small" color="error"><Delete /></IconButton>
+                                    <IconButton size="small" onClick={() => handleEdit(user)}><Edit /></IconButton>
+                                    <IconButton size="small" color="error" onClick={() => handleDelete(user.id)}><Delete /></IconButton>
                                 </TableCell>
                             </TableRow>
                         ))}
