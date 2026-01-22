@@ -20,6 +20,7 @@ import KitchensPage from './pages/KitchensPage';
 import UsersPage from './pages/UsersPage';
 import MenuManagementPage from './pages/MenuManagementPage';
 import KitchenDisplayPage from './pages/KitchenDisplayPage';
+import TablesPage from './pages/TablesPage';
 
 import DashboardPage from './pages/DashboardPage';
 
@@ -45,6 +46,7 @@ function App() {
               <Route path="kitchens" element={<KitchensPage />} />
               <Route path="users" element={<UsersPage />} />
               <Route path="menu" element={<MenuManagementPage />} />
+              <Route path="tables" element={<TablesPage />} />
               <Route path="kds" element={<KitchenDisplayPage />} />
             </Route>
 

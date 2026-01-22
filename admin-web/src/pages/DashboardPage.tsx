@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Grid, Paper, Typography, Box, alpha, useTheme } from '@mui/material';
 import { AttachMoney, People, Restaurant, ShoppingCart, TrendingUp } from '@mui/icons-material';
+import api from '../services/api';
 
 const StatCard: React.FC<{
     title: string;
@@ -99,12 +100,14 @@ const DashboardPage: React.FC = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                // Mocking data for now
+                const response = await api.get('/analytics/dashboard');
+                // The API returns { totalOrders, totalRevenue, activeKitchens, activeUsers }
+                // We map it to the state structure
                 setStats({
-                    totalOrders: 154,
-                    totalRevenue: 3450.00,
-                    activeKitchens: 5,
-                    activeUsers: 12
+                    totalOrders: response.data.totalOrders,
+                    totalRevenue: response.data.totalRevenue,
+                    activeKitchens: response.data.activeKitchens,
+                    activeUsers: response.data.activeUsers
                 });
             } catch (error) {
                 console.error('Failed to fetch stats', error);
@@ -128,7 +131,7 @@ const DashboardPage: React.FC = () => {
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <StatCard
                         title="Total Revenue"
-                        value={`$${stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+                        value={`₹${stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
                         icon={<AttachMoney />}
                         color="#6366f1"
                         trend="+12.5%"

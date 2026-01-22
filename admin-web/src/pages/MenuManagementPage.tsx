@@ -17,10 +17,13 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogActions
+    DialogActions,
+    Switch,
+    Chip
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import api from '../services/api';
+import axios from 'axios'; // Added axios for the patch request
 
 interface MenuItemType {
     id: string;
@@ -30,6 +33,7 @@ interface MenuItemType {
     branch_id: string;
     category?: string;
     image_url?: string;
+    is_available?: boolean;
     kitchen?: { name: string };
 }
 
@@ -64,8 +68,8 @@ const MenuManagementPage: React.FC = () => {
             console.error('Failed to fetch data', error);
             // Mock data
             setMenuItems([
-                { id: '1', name: 'Burger', price: 9.99, kitchen_id: '1', branch_id: '1', kitchen: { name: 'Grill Station' } },
-                { id: '2', name: 'Pizza', price: 12.50, kitchen_id: '2', branch_id: '1', kitchen: { name: 'Pizza Corner' } },
+                { id: '1', name: 'Burger', price: 9.99, kitchen_id: '1', branch_id: '1', kitchen: { name: 'Grill Station' }, is_available: true },
+                { id: '2', name: 'Pizza', price: 12.50, kitchen_id: '2', branch_id: '1', kitchen: { name: 'Pizza Corner' }, is_available: false },
             ]);
             setKitchens([
                 { id: '1', name: 'Grill Station' },
@@ -107,9 +111,10 @@ const MenuManagementPage: React.FC = () => {
                         <TableRow>
                             <TableCell>Image</TableCell>
                             <TableCell>Name</TableCell>
-                            <TableCell>Category</TableCell>
                             <TableCell>Price</TableCell>
+                            <TableCell>Category</TableCell>
                             <TableCell>Kitchen</TableCell>
+                            <TableCell>Availability</TableCell>
                             <TableCell align="right">Actions</TableCell>
                         </TableRow>
                     </TableHead>
@@ -117,12 +122,38 @@ const MenuManagementPage: React.FC = () => {
                         {menuItems.map((item) => (
                             <TableRow key={item.id}>
                                 <TableCell>
-                                    {item.image_url && <CardMedia component="img" sx={{ width: 50, height: 50, borderRadius: 1 }} image={item.image_url} alt={item.name} />}
+                                    {item.image_url && <Box component="img" src={item.image_url} sx={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 1 }} />}
                                 </TableCell>
                                 <TableCell>{item.name}</TableCell>
-                                <TableCell>{item.category || 'General'}</TableCell>
-                                <TableCell>${item.price}</TableCell>
+                                <TableCell>₹{Number(item.price).toFixed(2)}</TableCell>
+                                <TableCell>
+                                    <Chip label={item.category || 'General'} size="small" variant="outlined" />
+                                </TableCell>
                                 <TableCell>{item.kitchen?.name || 'Unknown'}</TableCell>
+                                <TableCell>
+                                    <Switch
+                                        checked={item.is_available !== false} // Default to true if undefined
+                                        onChange={async (e) => {
+                                            const newStatus = e.target.checked;
+                                            // Optimistic update
+                                            setMenuItems(menuItems.map(i => i.id === item.id ? { ...i, is_available: newStatus } : i));
+
+                                            try {
+                                                // We need to send all required fields or the backend validation might fail if using PUT/PATCH depending on implementation.
+                                                // Assuming PATCH or PUT that accepts partial updates or full object.
+                                                // To be safe, let's just update the specific field if we had a specific endpoint, but here we likely reuse the update logic.
+
+                                                // Ideally we should use a PATCH endpoint, but for now we'll update the item directly.
+                                                await axios.patch(`http://localhost:3000/menu-items/${item.id}`, { is_available: newStatus });
+                                            } catch (error) {
+                                                console.error("Failed to update availability", error);
+                                                // Revert on failure
+                                                setMenuItems(menuItems.map(i => i.id === item.id ? { ...i, is_available: !newStatus } : i));
+                                            }
+                                        }}
+                                        color="success"
+                                    />
+                                </TableCell>
                                 <TableCell align="right">
                                     <IconButton size="small"><Edit /></IconButton>
                                     <IconButton size="small" color="error"><Delete /></IconButton>

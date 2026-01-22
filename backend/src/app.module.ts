@@ -10,6 +10,7 @@ import { OrdersModule } from './orders/orders.module';
 import { MenuItemsModule } from './menu-items/menu-items.module';
 import { EventsModule } from './events/events.module';
 import { AuthModule } from './auth/auth.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -38,8 +39,9 @@ import { AuthModule } from './auth/auth.module';
     MenuItemsModule,
     EventsModule,
     AuthModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

@@ -27,5 +27,8 @@ export class MenuItem {
 
     @Column({ default: 'General' })
     category: string;
+
+    @Column({ default: true })
+    is_available: boolean;
 }
 

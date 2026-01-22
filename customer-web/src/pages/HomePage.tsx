@@ -15,6 +15,7 @@ interface MenuItem {
     branch_id: string;
     category?: string;
     kitchen?: { name: string };
+    is_available?: boolean;
 }
 
 const HomePage: React.FC = () => {
@@ -123,27 +124,38 @@ const HomePage: React.FC = () => {
                                             <Typography variant="h6" gutterBottom>
                                                 {item.name}
                                             </Typography>
-                                            <Chip label={`$${item.price}`} color="primary" size="small" />
+                                            <Chip label={`₹${item.price}`} color="primary" size="small" />
                                         </Box>
                                         <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                             <Star fontSize="inherit" color="warning" /> 4.5 • {item.kitchen?.name || 'Local Kitchen'}
                                         </Typography>
                                     </CardContent>
                                     <Box sx={{ p: 2, pt: 0 }}>
-                                        <Button
-                                            fullWidth
-                                            variant="contained"
-                                            startIcon={<Add />}
-                                            onClick={() => addToCart({
-                                                id: item.id,
-                                                name: item.name,
-                                                price: item.price,
-                                                image_url: item.image_url,
-                                                kitchen_name: item.kitchen?.name
-                                            })}
-                                        >
-                                            Add to Order
-                                        </Button>
+                                        {item.is_available !== false ? (
+                                            <Button
+                                                fullWidth
+                                                variant="contained"
+                                                startIcon={<Add />}
+                                                onClick={() => addToCart({
+                                                    id: item.id,
+                                                    name: item.name,
+                                                    price: item.price,
+                                                    image_url: item.image_url,
+                                                    kitchen_name: item.kitchen?.name
+                                                })}
+                                            >
+                                                Add to Order
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                fullWidth
+                                                variant="contained"
+                                                color="error"
+                                                disabled
+                                            >
+                                                Sold Out
+                                            </Button>
+                                        )}
                                     </Box>
                                 </Card>
                             </motion.div>

@@ -5,5 +5,6 @@ export class CreateMenuItemDto {
     branch_id: string;
     image_url?: string;
     category?: string;
+    is_available?: boolean;
 }
 

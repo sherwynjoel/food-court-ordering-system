@@ -31,7 +31,7 @@ const CartPage: React.FC = () => {
             console.error('Checkout failed:', err);
             // Fallback for demo if backend is down
             setTimeout(() => {
-                alert(`Demo Mode: Order placed successfully (offline). Total: $${total.toFixed(2)}`);
+                alert(`Demo Mode: Order placed successfully (offline). Total: ₹${total.toFixed(2)}`);
                 clearCart();
                 navigate('/order/101');
             }, 1000);
@@ -99,7 +99,7 @@ const CartPage: React.FC = () => {
                                         }
                                     />
                                     <Typography variant="h6" sx={{ minWidth: 60, textAlign: 'right' }}>
-                                        ${(item.price * item.quantity).toFixed(2)}
+                                        ₹{(item.price * item.quantity).toFixed(2)}
                                     </Typography>
                                 </ListItem>
                                 <Divider />
@@ -110,7 +110,7 @@ const CartPage: React.FC = () => {
                 <Box sx={{ p: 3, bgcolor: 'background.default' }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
                         <Typography variant="h6" color="text.secondary">Total</Typography>
-                        <Typography variant="h4" fontWeight="bold" color="primary">${total.toFixed(2)}</Typography>
+                        <Typography variant="h4" fontWeight="bold" color="primary">₹{total.toFixed(2)}</Typography>
                     </Box>
                     <Button
                         fullWidth

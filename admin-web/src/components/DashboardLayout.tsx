@@ -26,7 +26,8 @@ import {
     People,
     Store,
     Logout,
-    Fastfood
+    Fastfood,
+    TableRestaurant
 } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 
@@ -63,6 +64,7 @@ const DashboardLayout: React.FC = () => {
         { text: 'Kitchens', icon: <Restaurant />, path: '/kitchens' },
         { text: 'Users', icon: <People />, path: '/users' },
         { text: 'Menu', icon: <Fastfood />, path: '/menu' },
+        { text: 'Tables', icon: <TableRestaurant />, path: '/tables' },
         { text: 'KDS', icon: <Restaurant />, path: '/kds' },
     ];
 
